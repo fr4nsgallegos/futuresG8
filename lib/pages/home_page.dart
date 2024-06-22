@@ -20,6 +20,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<List<Map>> getItems() {
+    return Future.delayed(Duration(seconds: 4), () {
+      return [
+        {"id": 1, "name": "Zapatos"},
+        {"id": 2, "name": "Camisas"},
+        {"id": 3, "name": "Pantalones"},
+      ];
+    });
+  }
+
   //SEGUNDA FORMA DE DESEVOLVER FUTURE
   setTitle() async {
     title = await getTitle();
@@ -58,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.all(48),
                 child: FutureBuilder(
-                  future: getNumber(),
+                  future: getItems(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     print("------------------------------");
                     print("SNAP: $snapshot");
@@ -68,11 +78,30 @@ class _HomePageState extends State<HomePage> {
                     print("tiene error: ${snapshot.hasError}");
                     print("hasshcode: ${snapshot.hashCode}");
                     print("------------------------------");
-                    return Text(
-                      snapshot.data == null
-                          ? "esperando"
-                          : snapshot.data.toString(),
+                    if (snapshot.hasData) {
+                      List<Map> data = snapshot.data;
+                      print(data);
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Text(
+                            data[index]["name"],
+                            textAlign: TextAlign.center,
+                          );
+                        },
+                      );
+                    }
+                    return CircularProgressIndicator(
+                      color: Colors.red,
+                      strokeWidth: 2,
                     );
+                    // Text("CARGANDO...");
+                    // return Text(
+                    //   snapshot.data == null
+                    //       ? "esperando"
+                    //       : snapshot.data.toString(),
+                    // );
                   },
                 ),
               )
